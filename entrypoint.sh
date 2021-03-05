@@ -22,14 +22,13 @@ fi
 
 # Allow some ENV variables to be customized
 if [[ -z "$SLUG" ]]; then
-    SLUG=${GITHUB_REPOSITORY#*/}
+    SLUG=${BITBUCKET_REPO_SLUG#*/}
 fi
 echo "ℹ︎ SLUG is $SLUG"
 
 # Does it even make sense for VERSION to be editable in a workflow definition?
 if [[ -z "$VERSION" ]]; then
-    VERSION="${GITHUB_REF#refs/tags/}"
-    VERSION="${VERSION#v}"
+    VERSION="${BITBUCKET_TAG}"
 fi
 if [[ -z "$VERSION" ]]; then
     echo "Wrong VERSION"
@@ -38,7 +37,7 @@ fi
 echo "ℹ︎ VERSION is $VERSION"
 
 if [[ -z "$ASSETS_DIR" ]]; then
-    ASSETS_DIR=".wordpress-org"
+    ASSETS_DIR="assets"
 fi
 echo "ℹ︎ ASSETS_DIR is $ASSETS_DIR"
 
@@ -51,7 +50,7 @@ else
 fi
 
 SVN_URL="https://plugins.svn.wordpress.org/${SLUG}/"
-SVN_DIR="/github/svn-${SLUG}"
+SVN_DIR="/svn-${SLUG}"
 
 # Checkout just trunk and assets for efficiency
 # Tagging will be handled on the SVN level
@@ -66,14 +65,14 @@ echo "➤ Copying files..."
 # The --delete flag will delete anything in destination that no longer exists in source
 if [[ -e "$GITHUB_WORKSPACE/.distignore" ]]; then
     echo "ℹ︎ Using .distignore"
-    rsync -rc --exclude-from="$GITHUB_WORKSPACE/.distignore" "$GITHUB_WORKSPACE/$SOURCE_DIR" trunk/ --delete --delete-excluded
+    rsync -rc --exclude-from="$BITBUCKET_WORKSPACE/.distignore" "$BITBUCKET_WORKSPACE/$SOURCE_DIR" trunk/ --delete --delete-excluded
 else
-    rsync -rc "$GITHUB_WORKSPACE/$SOURCE_DIR" trunk/ --delete --delete-excluded
+    rsync -rc "$BITBUCKET_WORKSPACE/$SOURCE_DIR" trunk/ --delete --delete-excluded
 fi
 
 # Copy dotorg assets to /assets
-if [[ -d "$GITHUB_WORKSPACE/$ASSETS_DIR/" ]]; then
-    rsync -rc "$GITHUB_WORKSPACE/$ASSETS_DIR/" assets/ --delete
+if [[ -d "$BITBUCKET_WORKSPACE/$ASSETS_DIR/" ]]; then
+    rsync -rc "$BITBUCKET_WORKSPACE/$ASSETS_DIR/" assets/ --delete
 else
     echo "ℹ︎ No assets directory found; skipping..."
 fi
