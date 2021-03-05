@@ -63,6 +63,7 @@ svn update --set-depth infinity trunk
 echo "➤ Copying files..."
 # Copy from current branch to /trunk, excluding dotorg assets
 # The --delete flag will delete anything in destination that no longer exists in source
+BITBUCKET_WORKSPACE="/opt/atlassian/pipelines/agent/build/"
 if [[ -e "$GITHUB_WORKSPACE/.distignore" ]]; then
     echo "ℹ︎ Using .distignore"
     rsync -rc --exclude-from="$BITBUCKET_WORKSPACE/.distignore" "$BITBUCKET_WORKSPACE/$SOURCE_DIR" trunk/ --delete --delete-excluded
