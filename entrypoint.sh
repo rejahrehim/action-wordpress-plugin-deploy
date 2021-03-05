@@ -44,7 +44,7 @@ echo "ℹ︎ ASSETS_DIR is $ASSETS_DIR"
 # By default we use root directory to upload on SVN
 # But sometimes we need to upload files from `build` directory
 if [[ -z "$SOURCE_DIR" ]]; then
-    SOURCE_DIR=""
+    SOURCE_DIR="src"
 else
     echo "ℹ︎ Using custom directory to upload from - $SOURCE_DIR"
 fi
